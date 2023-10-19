@@ -75,22 +75,35 @@ function newGame() {
 	// 
 	
 	// Use clearTimeout() to clear the computer's move timeout and then set computerMoveTimeout back to 0.
-
+	clearTimeout(computerMoveTimeout);
+	computerMoveTimeout = 0;
 
 	// Loop through all game board buttons and set the inner HTML of each to an empty string. Also remove the class name and disabled attribute. The disabled attribute prevents the user from clicking the button, but all the buttons should be clickable when starting a new game.
-
+	const buttons = getGameBoardButtons ();
+	for(let button of buttons){
+		button.innerHTML = "";
+		button.removeAttribute("class");
+		button.disabled = false;
+	}
 
 	// Allow the player to take a turn by setting playerTurn to true.
-
+	playerTurn = true;
+	
 
 	// Set the text of the turn information paragraph to "Your turn".
-
+	document.getElementById("turnInfo").innerText = "Your turn";
 }
 
 function boardButtonClicked(button) {
 	// TODO: Complete the function
 
 	// If playerTurn is true:
+	if(playerTurn){
+		button.innerHTML = "X"
+		button.classList.add("x");
+		button.disabled = true
+		switchTurn();
+	}
 
 	// Set the button's inner HTML to "X".
 
@@ -104,23 +117,44 @@ function boardButtonClicked(button) {
 function switchTurn() {
 	// TODO: Complete the function
 	// Call checkForWinner() to determine the game's status.
-
+	let status = checkForWinner();
 	// If more moves are left, do the following:
 	// you can use this comparison to tell you whether or not there are moves left:
-	// status == gameStatus.MORE_MOVES_LEFT
+	 if(status == gameStatus.MORE_MOVES_LEFT){
+		if(playerTurn){
+			computerMoveTimeout = setTimeout(()=>{
+				makeComputerMove();
+			},1000);
+		}
+		playerTurn = !playerTurn;
+		if(playerTurn){
+			document.getElementById("turnInfo").innerHTML = "Your turn";
+		}else{
+			document.getElementById("turnInfo").innerHTML = "Computer's turn";
+		}
+	 }
 
 	// If switching from the player's turn to the computer's turn, use setTimeout() to call makeComputerMove() after 1 second (1000 milliseconds). Assign the return value of setTimeout() to computerMoveTimeout. The timeout simulates the computer "thinking", and prevents the nearly-instant response to each player move that would occur from a direct call to makeComputerMove().
 	// Toggle playerTurn's value from false to true or from true to false.
 	// Set the turn information paragraph's text content to "Your turn" if playerTurn is true, or "Computer's turn" if playerTurn is false.
-
+	
 
 	// In the case of a winner or a draw game, do the following:
-
+else {
+	playerTurn = false
+	if(status == gameStatus.HUMAN_WINS){
+	document.getElementById("turnInfo").innerHTML = "You win!";
+	}else if(status == gameStatus.COMPUTER_WINS){
+	document.getElementById("turnInfo").innerHTML = "Computer wins!";
+	}else if(status == gameStatus.DRAW_GAME){
+		document.getElementById("turnInfo").innerHTML = "Draw game";
+	}
+}
 	// Set playerTurn to false to prevent the user from being able to place an X after the game is over.
 	// If the human has won, display the text "You win!" in the turn info paragraph.
 	// you can use this comparison to tell that the human won:
 	// status == gameStatus.HUMAN_WINS
-
+	
 	// If the computer has won, display the text "Computer wins!" in the turn info paragraph.
 	// you can use this comparison to tell that the computer won:
 	// status == gameStatus.COMPUTER_WINS
